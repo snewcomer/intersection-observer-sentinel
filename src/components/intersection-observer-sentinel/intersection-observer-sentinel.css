@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.intersection-observer-sentinel {
+  height: 5px;
+}
