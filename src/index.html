@@ -14,30 +14,51 @@
     </style>
   </head>
   <body>
-    <intersection-observer-sentinel>
-      <img slot="inner-content" src="https://s3.amazonaws.com/uifaces/faces/twitter/jarjan/128.jpg" height="200" width="200" />
-    </intersection-observer-sentinel>
+    <div id="container"></div>
+
+    <intersection-observer-sentinel id="load-more"><intersection-observer-sentinel>
 
     <script>
-      const images = ["jarjan", "aio___", "kushsolitary", "kolage", "idiot", "gt"];
+      function loadMore() {
+        const images = ["jarjan", "aio___", "kushsolitary", "kolage", "idiot", "gt"];
 
-      const arr = Array.apply(null, Array(10));
-      const data = [...arr.map(() => {
-        return {
-          bgColor: 'E8D26F',
-          url: `https://s3.amazonaws.com/uifaces/faces/twitter/${images[(Math.random() * images.length) | 0]}/128.jpg`
+        const arr = Array.apply(null, Array(10));
+        const data = arr.map(() => {
+          return {
+            bgColor: 'E8D26F',
+            url: `https://s3.amazonaws.com/uifaces/faces/twitter/${images[(Math.random() * images.length) | 0]}/128.jpg`
+          }
+        });
+        let container = document.querySelector('#container');
+        for (let img of data) {
+          let elem = document.createElement('img');
+          elem.setAttribute('data-src', img.url);
+          elem.setAttribute('height', 200);
+          elem.setAttribute('width', 200);
+
+          let sentinel = document.createElement('intersection-observer-sentinel');
+          sentinel.classList.add('artwork');
+          sentinel.block = true;
+          sentinel.configOptions = {
+            viewportTolerance: { bottom: 100 }
+          }
+          sentinel.enterCallback = ({ target }) => {
+            target.src = target.getAttribute('data-src');
+          }
+          sentinel.appendChild(elem)
+          container.appendChild(sentinel);
         }
-      })];
+      }
     </script>
 
     <script>
+      loadMore();
       window.addEventListener('DOMContentLoaded', () => {
-        let sentinel = document.querySelector('intersection-observer-sentinel');
-        sentinel.block = true;
-        sentinel.configOptions = {
-          viewportTolerance: { bottom: 20 }
+        // manage loading more
+        let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
+        endSentinel.enterCallback = () => {
+          loadMore();
         }
-        sentinel.enterCallback = () => {}
       });
     </script>
   </body>

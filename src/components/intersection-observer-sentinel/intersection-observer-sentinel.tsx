@@ -13,6 +13,8 @@ export class IntersectionObserverSentinel {
   @State() isVisible: boolean;
 
   @Prop() block: boolean;
+  @Prop() hostId: string;
+  @Prop() hostClass: string;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
@@ -28,7 +30,7 @@ export class IntersectionObserverSentinel {
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions(this.configOptions);
-    const element = this.el.firstElementChild as HTMLElement;
+    const element = this.el.firstElementChild as HTMLElement; // not XML
 
     const enterCallback = (...args) => {
       this.isVisible = true;
@@ -87,9 +89,10 @@ export class IntersectionObserverSentinel {
   }
 
   render() {
+    let content;
     if (this.block) {
       if (this.isVisible) {
-        return <slot name="inner-content"></slot>;
+        content = <slot name="inner-content"></slot>;
       }
     } else {
       let id = '';
@@ -102,8 +105,9 @@ export class IntersectionObserverSentinel {
         klass += ` ${this.sentinelClass}`;
       }
 
-      return <div id={id} class={klass}></div>;
+      content = <div id={id} class={klass}></div>;
     }
 
+    return content
   }
 }
