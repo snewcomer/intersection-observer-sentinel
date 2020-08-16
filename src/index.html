@@ -16,7 +16,7 @@
   <body>
     <div id="container"></div>
 
-    <intersection-observer-sentinel id="load-more"><intersection-observer-sentinel>
+    <intersection-observer-sentinel id="load-more"></intersection-observer-sentinel>
 
     <script>
       function loadMore() {
@@ -53,8 +53,8 @@
 
     <script>
       loadMore();
+
       window.addEventListener('DOMContentLoaded', () => {
-        // manage loading more
         let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
         endSentinel.enterCallback = () => {
           loadMore();
