@@ -7,12 +7,12 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface IntersectionObserverSentinel {
+        "block": boolean;
         "configOptions": object;
         "enterCallback": Function;
         "exitCallback": Function;
         "sentinelClass": string;
         "sentinelId": string;
-        "tagless": boolean;
     }
 }
 declare global {
@@ -28,12 +28,12 @@ declare global {
 }
 declare namespace LocalJSX {
     interface IntersectionObserverSentinel {
+        "block"?: boolean;
         "configOptions"?: object;
         "enterCallback"?: Function;
         "exitCallback"?: Function;
         "sentinelClass"?: string;
         "sentinelId"?: string;
-        "tagless"?: boolean;
     }
     interface IntrinsicElements {
         "intersection-observer-sentinel": IntersectionObserverSentinel;

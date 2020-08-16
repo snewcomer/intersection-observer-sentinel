@@ -16,7 +16,6 @@
   <body>
     <intersection-observer-sentinel>
       <img slot="inner-content" src="https://s3.amazonaws.com/uifaces/faces/twitter/jarjan/128.jpg" height="200" width="200" />
-      <img slot="inner-content" src="https://s3.amazonaws.com/uifaces/faces/twitter/idiot/128.jpg" height="200" width="200" />
     </intersection-observer-sentinel>
 
     <script>
@@ -34,7 +33,7 @@
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         let sentinel = document.querySelector('intersection-observer-sentinel');
-        sentinel.tagless = true;
+        sentinel.block = true;
         sentinel.configOptions = {
           viewportTolerance: { bottom: 20 }
         }

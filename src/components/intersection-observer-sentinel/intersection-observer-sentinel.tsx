@@ -1,4 +1,4 @@
-import { Component, Element, Prop, h } from '@stencil/core';
+import { Component, Element, Prop, State, h } from '@stencil/core';
 import { ObserverAdmin } from '../../utils/observer-admin';
 
 // Note - cannot use Host b/c Stencil components only define an HTMLElement interface but are not HTMLElements themselves.
@@ -10,7 +10,9 @@ import { ObserverAdmin } from '../../utils/observer-admin';
 export class IntersectionObserverSentinel {
   @Element() el: HTMLElement;
 
-  @Prop() tagless: boolean;
+  @State() isVisible: boolean;
+
+  @Prop() block: boolean;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
@@ -26,9 +28,14 @@ export class IntersectionObserverSentinel {
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions(this.configOptions);
-    const element = this.el.querySelector('div');
+    const element = this.el.firstElementChild as HTMLElement;
 
-    this.setupIntersectionObserver(element, observerOptions, this.enterCallback, this.exitCallback);
+    const enterCallback = (...args) => {
+      this.isVisible = true;
+      this.enterCallback(...args);
+    }
+
+    this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
   }
 
   disconnectedCallback() {
@@ -80,20 +87,23 @@ export class IntersectionObserverSentinel {
   }
 
   render() {
-    let id = '';
-    if (this.sentinelId) {
-      id += ` ${this.sentinelId}`;
+    if (this.block) {
+      if (this.isVisible) {
+        return <slot name="inner-content"></slot>;
+      }
+    } else {
+      let id = '';
+      if (this.sentinelId) {
+        id += ` ${this.sentinelId}`;
+      }
+
+      let klass = 'intersection-observer-sentinel';
+      if (this.sentinelClass) {
+        klass += ` ${this.sentinelClass}`;
+      }
+
+      return <div id={id} class={klass}></div>;
     }
 
-    let klass = 'intersection-observer-sentinel';
-    if (this.sentinelClass) {
-      klass += ` ${this.sentinelClass}`;
-    }
-
-    if (this.tagless) {
-      return <slot name="inner-content"></slot>;
-    }
-
-    return <div id={id} class={klass}><slot name="inner-content"></slot></div>;
   }
 }
