@@ -12,6 +12,7 @@ export namespace Components {
         "exitCallback": Function;
         "sentinelClass": string;
         "sentinelId": string;
+        "tagless": boolean;
     }
 }
 declare global {
@@ -32,6 +33,7 @@ declare namespace LocalJSX {
         "exitCallback"?: Function;
         "sentinelClass"?: string;
         "sentinelId"?: string;
+        "tagless"?: boolean;
     }
     interface IntrinsicElements {
         "intersection-observer-sentinel": IntersectionObserverSentinel;

@@ -5,11 +5,12 @@ import { ObserverAdmin } from '../../utils/observer-admin';
 @Component({
   tag: 'intersection-observer-sentinel',
   styleUrl: 'intersection-observer-sentinel.css',
-  shadow: true,
+  shadow: false,
 })
 export class IntersectionObserverSentinel {
   @Element() el: HTMLElement;
 
+  @Prop() tagless: boolean;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
@@ -25,7 +26,7 @@ export class IntersectionObserverSentinel {
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions(this.configOptions);
-    const element = this.el.shadowRoot.querySelector('div');
+    const element = this.el.querySelector('div');
 
     this.setupIntersectionObserver(element, observerOptions, this.enterCallback, this.exitCallback);
   }
@@ -61,7 +62,7 @@ export class IntersectionObserverSentinel {
     return {
       root: domScrollableArea,
       rootMargin: `${top}px ${right}px ${bottom}px ${left}px`,
-      threshold: options.intersectionThreshold
+      threshold: options.threshold
     };
   }
 
@@ -87,6 +88,10 @@ export class IntersectionObserverSentinel {
     let klass = 'intersection-observer-sentinel';
     if (this.sentinelClass) {
       klass += ` ${this.sentinelClass}`;
+    }
+
+    if (this.tagless) {
+      return <slot name="inner-content"></slot>;
     }
 
     return <div id={id} class={klass}><slot name="inner-content"></slot></div>;
