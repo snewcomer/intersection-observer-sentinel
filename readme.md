@@ -1,24 +1,79 @@
 ![Built With Stencil](https://img.shields.io/badge/-Built%20With%20Stencil-16161d.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI%2BCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI%2BCgkuc3Qwe2ZpbGw6I0ZGRkZGRjt9Cjwvc3R5bGU%2BCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik00MjQuNywzNzMuOWMwLDM3LjYtNTUuMSw2OC42LTkyLjcsNjguNkgxODAuNGMtMzcuOSwwLTkyLjctMzAuNy05Mi43LTY4LjZ2LTMuNmgzMzYuOVYzNzMuOXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTQyNC43LDI5Mi4xSDE4MC40Yy0zNy42LDAtOTIuNy0zMS05Mi43LTY4LjZ2LTMuNkgzMzJjMzcuNiwwLDkyLjcsMzEsOTIuNyw2OC42VjI5Mi4xeiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDI0LjcsMTQxLjdIODcuN3YtMy42YzAtMzcuNiw1NC44LTY4LjYsOTIuNy02OC42SDMzMmMzNy45LDAsOTIuNywzMC43LDkyLjcsNjguNlYxNDEuN3oiLz4KPC9zdmc%2BCg%3D%3D&colorA=16161d&style=flat-square)
 
-# Stencil
+## Usage
 
-Stencil is a compiler for building fast web apps using Web Components.
+### Lazy loading large lists
 
-Stencil combines the best concepts of the most popular frontend frameworks into a compile-time rather than run-time tool.  Stencil takes TypeScript, JSX, a tiny virtual DOM layer, efficient one-way data binding, an asynchronous rendering pipeline (similar to React Fiber), and lazy-loading out of the box, and generates 100% standards-based Web Components that run in any browser supporting the Custom Elements v1 spec.
+Often when loading large lists of items, we want to lazy load more items when we reach the bottom of the list.
 
-Stencil components are just Web Components, so they work in any major framework or with no framework at all.
+```html
+<ul>
+ ...
+</ul>
+<intersection-observer-sentinel id="load-more">
+  <div slot="inner-content">
+    <h4>Loading</h4>
+  </div>
+</intersection-observer-sentinel>
 
-## Getting Started
-
-To start building a new web component using Stencil, clone this repo to a new directory:
-
-```bash
-git clone https://github.com/ionic-team/stencil-component-starter.git intersection-observer-sentinel
-cd intersection-observer-sentinel
-git remote rm origin
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
+    endSentinel.enterCallback = () => {
+      loadMore();
+    }
+  });
+</script>
 ```
 
-and run:
+### Block form
+
+Images are a common way to save Time to First Paint. When this web component comes into view, it will render the inner contents to the page.
+
+```html
+<intersection-observer-sentinel block="true">
+  <img src="https://url" />
+</intersection-observer-sentinel>
+```
+
+This has one drawback - it loads the image, thus adding a new container with width/height to your page, potentially thrashing your layout.
+
+### Lazy Loading Images
+
+  - API -
+    - configOptions: { scrollableArea?: string, threshold?: number, viewportTolerance?: object }
+    - enterCallback: Function
+    - exitCallback: Function
+
+Unlike the last example, we render the `<img>` element to avoid layout thrashing.
+
+```html
+<intersection-observer-sentinel class="artwork">
+  <img data-src="https://url" style="background-color: gray;" height="200" width="200" />
+</intersection-observer-sentinel>
+<intersection-observer-sentinel class="artwork">
+  <img data-src="https://url" style="background-color: gray;" height="200" width="200" />
+</intersection-observer-sentinel>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    let webComponents = Array.from(document.querySelectorAll('intersection-observer-sentinel'));
+    webComponents.forEach((component) => {
+      // attach enterCallback
+      component.configOptions = {
+        // scrollableArea: '.list',
+        // threshold: 0.5,
+        viewportTolerance: { bottom: 100 }
+      };
+      artwork.enterCallback = ({ target }) => {
+        target.src = target.getAttribute('data-src');
+      };
+    })
+  });
+</script>
+```
+
+## Getting Started
 
 ```bash
 npm install
@@ -36,8 +91,6 @@ To run the unit tests for the components, run:
 ```bash
 npm test
 ```
-
-Need help? Check out our docs [here](https://stenciljs.com/docs/my-first-component).
 
 
 ## Using this component
@@ -60,3 +113,50 @@ The first step for all three of these strategies is to [publish to NPM](https://
 - Run `npm install intersection-observer-sentinel --save`
 - Add an import to the npm packages `import intersection-observer-sentinel;`
 - Then you can use the element anywhere in your template, JSX, html etc
+
+## [**IntersectionObserver**'s Browser Support](https://platform-status.mozilla.org/)
+
+### Out of the box
+
+<table>
+    <tr>
+        <td>Chrome</td>
+        <td>51 <sup>[1]</sup></td>
+    </tr>
+    <tr>
+        <td>Firefox (Gecko)</td>
+        <td>55 <sup>[2]</sup></td>
+    </tr>
+    <tr>
+        <td>MS Edge</td>
+        <td>15</td>
+    </tr>
+    <tr>
+        <td>Internet Explorer</td>
+        <td>Not supported</td>
+    </tr>
+    <tr>
+        <td>Opera <sup>[1]</sup></td>
+        <td>38</td>
+    </tr>
+    <tr>
+        <td>Safari</td>
+        <td>Safari Technology Preview</td>
+    </tr>
+    <tr>
+        <td>Chrome for Android</td>
+        <td>59</td>
+    </tr>
+    <tr>
+        <td>Android Browser</td>
+        <td>56</td>
+    </tr>
+    <tr>
+        <td>Opera Mobile</td>
+        <td>37</td>
+    </tr>
+</table>
+
+* [1] [Reportedly available](https://www.chromestatus.com/features/5695342691483648), it didn't trigger the events on initial load and lacks `isIntersecting` until later versions.
+* [2] This feature was implemented in Gecko 53.0 (Firefox 53.0 / Thunderbird 53.0 / SeaMonkey 2.50) behind the preference `dom.IntersectionObserver.enabled`.
+
