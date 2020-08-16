@@ -103,7 +103,7 @@ export class IntersectionObserverSentinel {
         klass += ` ${this.sentinelClass}`;
       }
 
-      content = <div id={id} class={klass}></div>;
+      content = <div id={id} class={klass}><slot name="inner-content"></slot></div>;
     }
 
     return content

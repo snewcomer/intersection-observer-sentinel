@@ -16,7 +16,11 @@
   <body>
     <div id="container"></div>
 
-    <intersection-observer-sentinel id="load-more"></intersection-observer-sentinel>
+    <intersection-observer-sentinel id="load-more">
+      <div slot="inner-content">
+        <h4>Loading</h4>
+      </div>
+    </intersection-observer-sentinel>
 
     <script>
       function loadMore() {
