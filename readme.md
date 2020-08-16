@@ -11,7 +11,7 @@ Often when loading large lists of items, we want to lazy load more items when we
  ...
 </ul>
 <intersection-observer-sentinel id="load-more">
-  <div slot="inner-content">
+  <div>
     <h4>Loading</h4>
   </div>
 </intersection-observer-sentinel>

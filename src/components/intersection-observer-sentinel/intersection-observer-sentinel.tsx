@@ -90,7 +90,7 @@ export class IntersectionObserverSentinel {
     let content;
     if (this.block) {
       if (this.isVisible) {
-        content = <slot name="inner-content"></slot>;
+        content = <slot></slot>;
       }
     } else {
       let id = '';
@@ -103,7 +103,7 @@ export class IntersectionObserverSentinel {
         klass += ` ${this.sentinelClass}`;
       }
 
-      content = <div id={id} class={klass}><slot name="inner-content"></slot></div>;
+      content = <div id={id} class={klass}><slot></slot></div>;
     }
 
     return content
