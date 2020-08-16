@@ -1,15 +1,18 @@
-import { Component, Element, Prop, h } from '@stencil/core';
+import { Component, Element, Prop, State, h } from '@stencil/core';
 import { ObserverAdmin } from '../../utils/observer-admin';
 
 // Note - cannot use Host b/c Stencil components only define an HTMLElement interface but are not HTMLElements themselves.
 @Component({
   tag: 'intersection-observer-sentinel',
   styleUrl: 'intersection-observer-sentinel.css',
-  shadow: true,
+  shadow: false,
 })
 export class IntersectionObserverSentinel {
   @Element() el: HTMLElement;
 
+  @State() isVisible: boolean;
+
+  @Prop() block: boolean;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
@@ -25,9 +28,14 @@ export class IntersectionObserverSentinel {
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions(this.configOptions);
-    const element = this.el.shadowRoot.querySelector('div');
+    const element = this.el.firstElementChild as HTMLElement; // not XML
 
-    this.setupIntersectionObserver(element, observerOptions, this.enterCallback, this.exitCallback);
+    const enterCallback = (...args) => {
+      this.isVisible = true;
+      this.enterCallback(...args);
+    }
+
+    this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
   }
 
   disconnectedCallback() {
@@ -61,7 +69,7 @@ export class IntersectionObserverSentinel {
     return {
       root: domScrollableArea,
       rootMargin: `${top}px ${right}px ${bottom}px ${left}px`,
-      threshold: options.intersectionThreshold
+      threshold: options.threshold
     };
   }
 
@@ -79,16 +87,25 @@ export class IntersectionObserverSentinel {
   }
 
   render() {
-    let id = '';
-    if (this.sentinelId) {
-      id += ` ${this.sentinelId}`;
+    let content;
+    if (this.block) {
+      if (this.isVisible) {
+        content = <slot name="inner-content"></slot>;
+      }
+    } else {
+      let id = '';
+      if (this.sentinelId) {
+        id += ` ${this.sentinelId}`;
+      }
+
+      let klass = 'intersection-observer-sentinel';
+      if (this.sentinelClass) {
+        klass += ` ${this.sentinelClass}`;
+      }
+
+      content = <div id={id} class={klass}><slot name="inner-content"></slot></div>;
     }
 
-    let klass = 'intersection-observer-sentinel';
-    if (this.sentinelClass) {
-      klass += ` ${this.sentinelClass}`;
-    }
-
-    return <div id={id} class={klass}><slot name="inner-content"></slot></div>;
+    return content
   }
 }
