@@ -13,8 +13,6 @@ export class IntersectionObserverSentinel {
   @State() isVisible: boolean;
 
   @Prop() block: boolean;
-  @Prop() hostId: string;
-  @Prop() hostClass: string;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {

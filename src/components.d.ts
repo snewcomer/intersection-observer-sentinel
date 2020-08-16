@@ -11,8 +11,6 @@ export namespace Components {
         "configOptions": object;
         "enterCallback": Function;
         "exitCallback": Function;
-        "hostClass": string;
-        "hostId": string;
         "sentinelClass": string;
         "sentinelId": string;
     }
@@ -34,8 +32,6 @@ declare namespace LocalJSX {
         "configOptions"?: object;
         "enterCallback"?: Function;
         "exitCallback"?: Function;
-        "hostClass"?: string;
-        "hostId"?: string;
         "sentinelClass"?: string;
         "sentinelId"?: string;
     }
