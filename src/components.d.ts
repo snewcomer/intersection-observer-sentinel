@@ -11,6 +11,7 @@ export namespace Components {
         "configOptions": object;
         "enterCallback": Function;
         "exitCallback": Function;
+        "once": boolean;
         "sentinelClass": string;
         "sentinelId": string;
     }
@@ -32,6 +33,7 @@ declare namespace LocalJSX {
         "configOptions"?: object;
         "enterCallback"?: Function;
         "exitCallback"?: Function;
+        "once"?: boolean;
         "sentinelClass"?: string;
         "sentinelId"?: string;
     }

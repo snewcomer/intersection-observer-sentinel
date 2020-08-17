@@ -12,6 +12,7 @@ export class IntersectionObserverSentinel {
 
   @State() isVisible: boolean;
 
+  @Prop() once: boolean;
   @Prop() block: boolean;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
@@ -33,6 +34,9 @@ export class IntersectionObserverSentinel {
     const enterCallback = (...args) => {
       this.isVisible = true;
       this.enterCallback(...args);
+      if (this.once) {
+        this.unobserveIntersectionObserver(...args);
+      }
     }
 
     this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
@@ -55,6 +59,19 @@ export class IntersectionObserverSentinel {
       enterCallback,
       exitCallback
     );
+  }
+
+  private unobserveIntersectionObserver(...args): void {
+    if (args[0] && args[0].target) {
+      let target = args[0].target;
+      const registeredTarget = this.registry.get(target as HTMLElement);
+      if (typeof registeredTarget === 'object') {
+        this.observerAdmin.unobserve(
+          target,
+          registeredTarget.observerOptions
+        );
+      }
+    }
   }
 
   private buildObserverOptions(options): object {

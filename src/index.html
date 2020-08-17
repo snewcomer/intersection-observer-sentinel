@@ -43,6 +43,7 @@
           let sentinel = document.createElement('intersection-observer-sentinel');
           sentinel.classList.add('artwork');
           sentinel.block = true;
+          sentinel.once = true;
           sentinel.configOptions = {
             viewportTolerance: { bottom: 100 }
           }
