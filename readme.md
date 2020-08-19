@@ -117,11 +117,6 @@ The first step for all three of these strategies is to [publish to NPM](https://
 - Put a script tag similar to this `<script src='node_modules/intersection-observer-sentinel/dist/intersection-observer-sentinel.js'></script>` in the head of your index.html
 - Then you can use the element anywhere in your template, JSX, html etc
 
-### In a stencil-starter app
-- Run `npm install intersection-observer-sentinel --save`
-- Add an import to the npm packages `import intersection-observer-sentinel;`
-- Then you can use the element anywhere in your template, JSX, html etc
-
 ## [**IntersectionObserver**'s Browser Support](https://platform-status.mozilla.org/)
 
 ### Out of the box
