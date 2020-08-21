@@ -43,6 +43,7 @@ export class IntersectionObserverSentinel {
     }
 
     this.enter.emit(data);
+    this.hasBeenCalled = true;
   };
 
   exitCallback = (data?: any) => {
