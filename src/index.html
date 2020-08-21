@@ -24,14 +24,14 @@
 
     <script>
       function loadMore() {
-        const images = ["jarjan", "aio___", "kushsolitary", "kolage", "idiot", "gt"];
+        const images = ['jarjan', 'aio___', 'kushsolitary', 'kolage', 'idiot', 'gt'];
 
         const arr = Array.apply(null, Array(10));
         const data = arr.map(() => {
           return {
             bgColor: 'E8D26F',
-            url: `https://s3.amazonaws.com/uifaces/faces/twitter/${images[(Math.random() * images.length) | 0]}/128.jpg`
-          }
+            url: `https://s3.amazonaws.com/uifaces/faces/twitter/${images[(Math.random() * images.length) | 0]}/128.jpg`,
+          };
         });
         let container = document.querySelector('#container');
         for (let img of data) {
@@ -44,13 +44,11 @@
           sentinel.classList.add('artwork');
           sentinel.block = true;
           sentinel.once = true;
-          sentinel.configOptions = {
-            viewportTolerance: { bottom: 100 }
-          }
+          sentinel.bottom = 100;
           sentinel.enterCallback = ({ target }) => {
             target.src = target.getAttribute('data-src');
-          }
-          sentinel.appendChild(elem)
+          };
+          sentinel.appendChild(elem);
           container.appendChild(sentinel);
         }
       }
@@ -63,7 +61,7 @@
         let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
         endSentinel.enterCallback = () => {
           loadMore();
-        }
+        };
       });
     </script>
   </body>
