@@ -49,7 +49,7 @@ export class IntersectionObserverSentinel {
     this.exit.emit(data);
   };
 
-  disconnectedCallback() {
+  componentDidUnload() {
     this.registry = null;
     if (this.observerAdmin) {
       this.observerAdmin.destroy();
@@ -57,7 +57,7 @@ export class IntersectionObserverSentinel {
     }
   }
 
-  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: Function, exitCallback: Function): void {
+  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     this.addToRegistry(element, observerOptions);
 
     this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);

@@ -1,4 +1,4 @@
-import IntersectionObserverAdmin from 'intersection-observer-admin';
+import IntersectionObserverAdmin, { IOptions } from 'intersection-observer-admin';
 
 /**
  * Static administrator to ensure use one IntersectionObserver per combination of root + observerOptions
@@ -11,7 +11,7 @@ import IntersectionObserverAdmin from 'intersection-observer-admin';
  * @class ObserverAdmin
  */
 export class ObserverAdmin {
-  instance: any;
+  instance: IntersectionObserverAdmin;
 
   constructor() {
     this.instance = new IntersectionObserverAdmin();
@@ -25,7 +25,7 @@ export class ObserverAdmin {
    * @param Function exitCallback
    * @void
    */
-  add(element: HTMLElement, observerOptions: object, enterCallback: Function, exitCallback: Function): void {
+  add(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     if (enterCallback) {
       this.addEnterCallback(element, enterCallback);
     }
@@ -36,11 +36,11 @@ export class ObserverAdmin {
     return this.instance.observe(element, observerOptions);
   }
 
-  addEnterCallback(element: HTMLElement, enterCallback: Function) {
+  addEnterCallback(element: HTMLElement, enterCallback: (data?: any) => void) {
     this.instance.addEnterCallback(element, enterCallback);
   }
 
-  addExitCallback(element: HTMLElement, exitCallback: Function) {
+  addExitCallback(element: HTMLElement, exitCallback: (data?: any) => void) {
     this.instance.addExitCallback(element, exitCallback);
   }
 
@@ -52,15 +52,13 @@ export class ObserverAdmin {
    * @method unobserve
    * @param HTMLElement target
    * @param Object observerOptions
-   * @param String scrollableArea
    * @void
    */
-  unobserve(...args) {
-    this.instance.unobserve(...args);
+  unobserve(target: HTMLElement, options: IOptions) {
+    this.instance.unobserve(target, options);
   }
 
-  destroy(...args) {
-    this.instance.destroy(...args);
+  destroy() {
+    this.instance.destroy();
   }
 }
-

@@ -7,13 +7,15 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type       | Default                           |
-| --------------- | ---------------- | ----------- | ---------- | --------------------------------- |
-| `configOptions` | --               |             | `object`   | `{     viewportTolerance: {}   }` |
-| `enterCallback` | --               |             | `Function` | `() => {}`                        |
-| `exitCallback`  | --               |             | `Function` | `() => {}`                        |
-| `sentinelClass` | `sentinel-class` |             | `string`   | `undefined`                       |
-| `sentinelId`    | `sentinel-id`    |             | `string`   | `undefined`                       |
+| Property        | Attribute        | Description | Type       | Default                            |
+| --------------- | ---------------- | ----------- | ---------- | ---------------------------------- |
+| `block`         | `block`          |             | `boolean`  | `undefined`                        |
+| `configOptions` | --               |             | `object`   | `{     viewportTolerance: {},   }` |
+| `enterCallback` | --               |             | `Function` | `() => {}`                         |
+| `exitCallback`  | --               |             | `Function` | `() => {}`                         |
+| `once`          | `once`           |             | `boolean`  | `undefined`                        |
+| `sentinelClass` | `sentinel-class` |             | `string`   | `undefined`                        |
+| `sentinelId`    | `sentinel-id`    |             | `string`   | `undefined`                        |
 
 
 ----------------------------------------------
