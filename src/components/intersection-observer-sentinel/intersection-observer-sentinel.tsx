@@ -13,24 +13,40 @@ export class IntersectionObserverSentinel {
 
   @State() isVisible: boolean;
 
+  @Event() enter: EventEmitter;
+  @Event() exit: EventEmitter;
+
   @Prop() once: boolean;
   @Prop() block: boolean;
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
-  @Prop() configOptions: object = {
-    viewportTolerance: {},
-  };
-  @Event() enter: EventEmitter;
-  @Event() exit: EventEmitter;
+  @Prop() bottom?: number;
+  @Prop() left?: number;
+  @Prop() right?: number;
+  @Prop() top?: number;
+  @Prop() scrollableArea?: string | HTMLElement;
+  @Prop() threshold?: number;
 
   private observerAdmin: ObserverAdmin = null;
 
   private registry = new WeakMap();
   private hasBeenCalled = false;
 
+  private get _scrollableArea(): string | HTMLElement | undefined {
+    const { scrollableArea } = this;
+
+    if (typeof scrollableArea === 'string') {
+      return document.querySelector(scrollableArea) as HTMLElement;
+    }
+
+    if (scrollableArea instanceof HTMLElement) {
+      return scrollableArea;
+    }
+  }
+
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
-    const observerOptions = this.buildObserverOptions(this.configOptions);
+    const observerOptions = this.buildObserverOptions();
     const element = this.el.firstElementChild as HTMLElement; // not XML
 
     this.setupIntersectionObserver(element, observerOptions, this.enterCallback, this.exitCallback);
@@ -64,21 +80,14 @@ export class IntersectionObserverSentinel {
     this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);
   }
 
-  private buildObserverOptions(options): object {
-    const domScrollableArea =
-      typeof options.scrollableArea === 'string'
-        ? document.querySelector(options.scrollableArea)
-        : options.scrollableArea instanceof HTMLElement
-        ? options.scrollableArea
-        : undefined;
-
+  private buildObserverOptions(): object {
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     // IntersectionObserver takes either a Document Element or null for `root`
-    const { top = 0, left = 0, bottom = 0, right = 0 } = options.viewportTolerance;
+    const { top = 0, left = 0, bottom = 0, right = 0, threshold = 0, _scrollableArea } = this;
     return {
-      root: domScrollableArea,
+      root: _scrollableArea,
       rootMargin: `${top}px ${right}px ${bottom}px ${left}px`,
-      threshold: options.threshold,
+      threshold: threshold,
     };
   }
 

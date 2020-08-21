@@ -44,9 +44,7 @@
           sentinel.classList.add('artwork');
           sentinel.block = true;
           sentinel.once = true;
-          sentinel.configOptions = {
-            viewportTolerance: { bottom: 100 },
-          };
+          sentinel.bottom = 100;
           sentinel.addEventListener('enter', ({ detail: { target } }) => {
             target.src = target.getAttribute('data-src');
           });
