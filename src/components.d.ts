@@ -9,8 +9,6 @@ export namespace Components {
     interface IntersectionObserverSentinel {
         "block": boolean;
         "bottom"?: number;
-        "enterCallback": (data?: any) => void;
-        "exitCallback": (data?: any) => void;
         "left"?: number;
         "once": boolean;
         "right"?: number;
@@ -36,9 +34,9 @@ declare namespace LocalJSX {
     interface IntersectionObserverSentinel {
         "block"?: boolean;
         "bottom"?: number;
-        "enterCallback"?: (data?: any) => void;
-        "exitCallback"?: (data?: any) => void;
         "left"?: number;
+        "onEnter"?: (event: CustomEvent<any>) => void;
+        "onExit"?: (event: CustomEvent<any>) => void;
         "once"?: boolean;
         "right"?: number;
         "scrollableArea"?: string | HTMLElement;

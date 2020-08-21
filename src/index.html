@@ -45,9 +45,9 @@
           sentinel.block = true;
           sentinel.once = true;
           sentinel.bottom = 100;
-          sentinel.enterCallback = ({ target }) => {
+          sentinel.addEventListener('enter', ({ detail: { target } }) => {
             target.src = target.getAttribute('data-src');
-          };
+          });
           sentinel.appendChild(elem);
           container.appendChild(sentinel);
         }
@@ -59,9 +59,9 @@
 
       window.addEventListener('DOMContentLoaded', () => {
         let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
-        endSentinel.enterCallback = () => {
+        endSentinel.addEventListener('enter', () => {
           loadMore();
-        };
+        });
       });
     </script>
   </body>
