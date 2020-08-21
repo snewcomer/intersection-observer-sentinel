@@ -1,5 +1,6 @@
-import { Component, Element, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Prop, State, h } from '@stencil/core';
 import { ObserverAdmin } from '../../utils/observer-admin';
+import { EventEmitter } from 'events';
 
 // Note - cannot use Host b/c Stencil components only define an HTMLElement interface but are not HTMLElements themselves.
 @Component({
@@ -17,30 +18,36 @@ export class IntersectionObserverSentinel {
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
-    viewportTolerance: {}
+    viewportTolerance: {},
   };
-  @Prop() enterCallback: Function = () => {};
-  @Prop() exitCallback: Function = () => {};
+  @Event() enter: EventEmitter;
+  @Event() exit: EventEmitter;
 
   private observerAdmin: ObserverAdmin = null;
 
   private registry = new WeakMap();
+  private hasBeenCalled = false;
 
   componentDidLoad() {
     this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions(this.configOptions);
     const element = this.el.firstElementChild as HTMLElement; // not XML
 
-    const enterCallback = (...args) => {
-      this.isVisible = true;
-      this.enterCallback(...args);
-      if (this.once) {
-        this.unobserveIntersectionObserver(...args);
-      }
+    this.setupIntersectionObserver(element, observerOptions, this.enterCallback, this.exitCallback);
+  }
+
+  enterCallback = (data?: any) => {
+    this.isVisible = true;
+    if (this.hasBeenCalled && this.once) {
+      return;
     }
 
-    this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
-  }
+    this.enter.emit(data);
+  };
+
+  exitCallback = (data?: any) => {
+    this.exit.emit(data);
+  };
 
   disconnectedCallback() {
     this.registry = null;
@@ -53,32 +60,16 @@ export class IntersectionObserverSentinel {
   private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: Function, exitCallback: Function): void {
     this.addToRegistry(element, observerOptions);
 
-    this.observerAdmin.add(
-      element,
-      observerOptions,
-      enterCallback,
-      exitCallback
-    );
-  }
-
-  private unobserveIntersectionObserver(...args): void {
-    if (args[0] && args[0].target) {
-      let target = args[0].target;
-      const registeredTarget = this.registry.get(target as HTMLElement);
-      if (typeof registeredTarget === 'object') {
-        this.observerAdmin.unobserve(
-          target,
-          registeredTarget.observerOptions
-        );
-      }
-    }
+    this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);
   }
 
   private buildObserverOptions(options): object {
     const domScrollableArea =
-      typeof options.scrollableArea === 'string' ? document.querySelector(options.scrollableArea)
-      : options.scrollableArea instanceof HTMLElement ? options.scrollableArea
-      : undefined;
+      typeof options.scrollableArea === 'string'
+        ? document.querySelector(options.scrollableArea)
+        : options.scrollableArea instanceof HTMLElement
+        ? options.scrollableArea
+        : undefined;
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     // IntersectionObserver takes either a Document Element or null for `root`
@@ -86,7 +77,7 @@ export class IntersectionObserverSentinel {
     return {
       root: domScrollableArea,
       rootMargin: `${top}px ${right}px ${bottom}px ${left}px`,
-      threshold: options.threshold
+      threshold: options.threshold,
     };
   }
 
@@ -120,9 +111,13 @@ export class IntersectionObserverSentinel {
         klass += ` ${this.sentinelClass}`;
       }
 
-      content = <div id={id} class={klass}><slot></slot></div>;
+      content = (
+        <div id={id} class={klass}>
+          <slot></slot>
+        </div>
+      );
     }
 
-    return content
+    return content;
   }
 }
