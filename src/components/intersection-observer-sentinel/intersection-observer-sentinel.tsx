@@ -22,8 +22,8 @@ export class IntersectionObserverSentinel {
   @Prop() top?: number;
   @Prop() scrollableArea?: string | HTMLElement;
   @Prop() threshold?: number;
-  @Prop() enterCallback: Function = () => {};
-  @Prop() exitCallback: Function = () => {};
+  @Prop() enterCallback: (data?: any) => void = () => {};
+  @Prop() exitCallback: (data?: any) => void = () => {};
 
   private observerAdmin: ObserverAdmin = null;
 
@@ -57,7 +57,7 @@ export class IntersectionObserverSentinel {
     this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
   }
 
-  disconnectedCallback() {
+  componentDidUnload() {
     this.registry = null;
     if (this.observerAdmin) {
       this.observerAdmin.destroy();
@@ -65,7 +65,7 @@ export class IntersectionObserverSentinel {
     }
   }
 
-  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: Function, exitCallback: Function): void {
+  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     this.addToRegistry(element, observerOptions);
 
     this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);
