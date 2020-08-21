@@ -9,8 +9,8 @@ export namespace Components {
     interface IntersectionObserverSentinel {
         "block": boolean;
         "configOptions": object;
-        "enterCallback": Function;
-        "exitCallback": Function;
+        "enterCallback": (data?: any) => void;
+        "exitCallback": (data?: any) => void;
         "once": boolean;
         "sentinelClass": string;
         "sentinelId": string;
@@ -31,8 +31,8 @@ declare namespace LocalJSX {
     interface IntersectionObserverSentinel {
         "block"?: boolean;
         "configOptions"?: object;
-        "enterCallback"?: Function;
-        "exitCallback"?: Function;
+        "enterCallback"?: (data?: any) => void;
+        "exitCallback"?: (data?: any) => void;
         "once"?: boolean;
         "sentinelClass"?: string;
         "sentinelId"?: string;

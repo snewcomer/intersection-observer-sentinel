@@ -17,10 +17,10 @@ export class IntersectionObserverSentinel {
   @Prop() sentinelId: string;
   @Prop() sentinelClass: string;
   @Prop() configOptions: object = {
-    viewportTolerance: {}
+    viewportTolerance: {},
   };
-  @Prop() enterCallback: Function = () => {};
-  @Prop() exitCallback: Function = () => {};
+  @Prop() enterCallback: (data?: any) => void = () => {};
+  @Prop() exitCallback: (data?: any) => void = () => {};
 
   private observerAdmin: ObserverAdmin = null;
 
@@ -37,12 +37,12 @@ export class IntersectionObserverSentinel {
       if (this.once) {
         this.unobserveIntersectionObserver(...args);
       }
-    }
+    };
 
     this.setupIntersectionObserver(element, observerOptions, enterCallback, this.exitCallback);
   }
 
-  disconnectedCallback() {
+  componentDidUnload() {
     this.registry = null;
     if (this.observerAdmin) {
       this.observerAdmin.destroy();
@@ -50,15 +50,10 @@ export class IntersectionObserverSentinel {
     }
   }
 
-  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: Function, exitCallback: Function): void {
+  private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     this.addToRegistry(element, observerOptions);
 
-    this.observerAdmin.add(
-      element,
-      observerOptions,
-      enterCallback,
-      exitCallback
-    );
+    this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);
   }
 
   private unobserveIntersectionObserver(...args): void {
@@ -66,19 +61,18 @@ export class IntersectionObserverSentinel {
       let target = args[0].target;
       const registeredTarget = this.registry.get(target as HTMLElement);
       if (typeof registeredTarget === 'object') {
-        this.observerAdmin.unobserve(
-          target,
-          registeredTarget.observerOptions
-        );
+        this.observerAdmin.unobserve(target, registeredTarget.observerOptions);
       }
     }
   }
 
   private buildObserverOptions(options): object {
     const domScrollableArea =
-      typeof options.scrollableArea === 'string' ? document.querySelector(options.scrollableArea)
-      : options.scrollableArea instanceof HTMLElement ? options.scrollableArea
-      : undefined;
+      typeof options.scrollableArea === 'string'
+        ? document.querySelector(options.scrollableArea)
+        : options.scrollableArea instanceof HTMLElement
+        ? options.scrollableArea
+        : undefined;
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     // IntersectionObserver takes either a Document Element or null for `root`
@@ -86,7 +80,7 @@ export class IntersectionObserverSentinel {
     return {
       root: domScrollableArea,
       rootMargin: `${top}px ${right}px ${bottom}px ${left}px`,
-      threshold: options.threshold
+      threshold: options.threshold,
     };
   }
 
@@ -120,9 +114,13 @@ export class IntersectionObserverSentinel {
         klass += ` ${this.sentinelClass}`;
       }
 
-      content = <div id={id} class={klass}><slot></slot></div>;
+      content = (
+        <div id={id} class={klass}>
+          <slot></slot>
+        </div>
+      );
     }
 
-    return content
+    return content;
   }
 }
