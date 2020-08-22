@@ -1,5 +1,5 @@
 import { Component, Element, Event, Prop, State, h } from '@stencil/core';
-import { ObserverAdmin } from '../../utils/observer-admin';
+import { observerAdmin } from '../../utils/observer-admin';
 import { EventEmitter } from 'events';
 
 // Note - cannot use Host b/c Stencil components only define an HTMLElement interface but are not HTMLElements themselves.
@@ -27,8 +27,6 @@ export class IntersectionObserverSentinel {
   @Prop() scrollableArea?: string | HTMLElement;
   @Prop() threshold?: number;
 
-  private observerAdmin: ObserverAdmin = null;
-
   private registry = new WeakMap();
   private hasBeenCalled = false;
 
@@ -45,7 +43,6 @@ export class IntersectionObserverSentinel {
   }
 
   componentDidLoad() {
-    this.observerAdmin = new ObserverAdmin();
     const observerOptions = this.buildObserverOptions();
     const element = this.el.firstElementChild as HTMLElement; // not XML
 
@@ -55,6 +52,8 @@ export class IntersectionObserverSentinel {
   enterCallback = (data?: any) => {
     this.isVisible = true;
     if (this.hasBeenCalled && this.once) {
+      // TODO: consider removing
+      this.unobserveIntersectionObserver(data.target);
       return;
     }
 
@@ -63,21 +62,18 @@ export class IntersectionObserverSentinel {
   };
 
   exitCallback = (data?: any) => {
+    // be careful with exit callbacks. They are ran when inserted (but are out of viewport)
     this.exit.emit(data);
   };
 
   componentDidUnload() {
     this.registry = null;
-    if (this.observerAdmin) {
-      this.observerAdmin.destroy();
-      this.observerAdmin = null;
-    }
   }
 
   private setupIntersectionObserver(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     this.addToRegistry(element, observerOptions);
 
-    this.observerAdmin.add(element, observerOptions, enterCallback, exitCallback);
+    observerAdmin.observe(element, observerOptions, enterCallback, exitCallback);
   }
 
   private buildObserverOptions(): object {
@@ -101,6 +97,18 @@ export class IntersectionObserverSentinel {
   private addToRegistry(element: HTMLElement, observerOptions: object): void {
     if (this.registry) {
       this.registry.set(element, { observerOptions });
+    }
+  }
+
+  private unobserveIntersectionObserver(target): void {
+    if (target) {
+      const registeredTarget = this.registry.get(target as HTMLElement);
+      if (typeof registeredTarget === 'object') {
+        observerAdmin.unobserve(
+          target,
+          registeredTarget.observerOptions
+        );
+      }
     }
   }
 
