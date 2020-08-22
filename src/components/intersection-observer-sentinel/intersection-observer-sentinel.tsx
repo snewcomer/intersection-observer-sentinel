@@ -55,6 +55,7 @@ export class IntersectionObserverSentinel {
   enterCallback = (data?: any) => {
     this.isVisible = true;
     if (this.hasBeenCalled && this.once) {
+      this.unobserveIntersectionObserver(data.target);
       return;
     }
 
@@ -101,6 +102,18 @@ export class IntersectionObserverSentinel {
   private addToRegistry(element: HTMLElement, observerOptions: object): void {
     if (this.registry) {
       this.registry.set(element, { observerOptions });
+    }
+  }
+
+  private unobserveIntersectionObserver(target): void {
+    if (target) {
+      const registeredTarget = this.registry.get(target as HTMLElement);
+      if (typeof registeredTarget === 'object') {
+        this.observerAdmin.unobserve(
+          target,
+          registeredTarget.observerOptions
+        );
+      }
     }
   }
 
