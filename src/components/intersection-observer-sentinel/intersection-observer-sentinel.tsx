@@ -52,6 +52,7 @@ export class IntersectionObserverSentinel {
   enterCallback = (data?: any) => {
     this.isVisible = true;
     if (this.hasBeenCalled && this.once) {
+      // TODO: consider removing
       this.unobserveIntersectionObserver(data.target);
       return;
     }
@@ -61,6 +62,7 @@ export class IntersectionObserverSentinel {
   };
 
   exitCallback = (data?: any) => {
+    // be careful with exit callbacks. They are ran when inserted (but are out of viewport)
     this.exit.emit(data);
   };
 
