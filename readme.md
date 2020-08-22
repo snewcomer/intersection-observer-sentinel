@@ -27,9 +27,9 @@ Often when loading large lists of items, we want to lazy load more items when we
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     let endSentinel = document.querySelector('intersection-observer-sentinel[id="load-more"]');
-    endSentinel.enterCallback = () => {
+    endSentinel.addEventListener('enter', () => {
       loadMore();
-    }
+    });
   });
 </script>
 ```
@@ -68,14 +68,13 @@ Unlike the last example, we render the `<img>` element to avoid layout thrashing
     let webComponents = Array.from(document.querySelectorAll('intersection-observer-sentinel'));
     webComponents.forEach((component) => {
       // attach enterCallback
-      component.configOptions = {
-        // scrollableArea: '.list',
-        // threshold: 0.5,
-        viewportTolerance: { bottom: 100 }
-      };
-      artwork.enterCallback = ({ target }) => {
+      component.bottom = 100;
+      artwork.addEventListener('enter', ({ detail: { target } }) => {
         target.src = target.getAttribute('data-src');
-      };
+      });
+      artwork.addEventListener('exit', ({ detail: { target } }) => {
+        target.src = target.getAttribute('data-src');
+      });
     })
   });
 </script>
