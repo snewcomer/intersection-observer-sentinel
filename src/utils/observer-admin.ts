@@ -10,7 +10,7 @@ import IntersectionObserverAdmin, { IOptions } from 'intersection-observer-admin
  *
  * @class ObserverAdmin
  */
-export class ObserverAdmin {
+class ObserverAdmin {
   instance: IntersectionObserverAdmin;
 
   constructor() {
@@ -18,14 +18,14 @@ export class ObserverAdmin {
   }
 
   /**
-   * @method add
+   * @method observe
    * @param HTMLElement element
    * @param Object observerOptions
    * @param Function enterCallback
    * @param Function exitCallback
    * @void
    */
-  add(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
+  observe(element: HTMLElement, observerOptions: object, enterCallback: (data?: any) => void, exitCallback: (data?: any) => void): void {
     if (enterCallback) {
       this.addEnterCallback(element, enterCallback);
     }
@@ -62,3 +62,6 @@ export class ObserverAdmin {
     this.instance.destroy();
   }
 }
+
+const observerAdmin = new ObserverAdmin();
+export { observerAdmin };
